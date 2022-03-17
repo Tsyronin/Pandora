@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PandoraMVC.Data;
 
 namespace PandoraMVC.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220221175019_InitialDbCreation")]
+    partial class InitialDbCreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,7 +158,7 @@ namespace PandoraMVC.Data.Migrations
 
             modelBuilder.Entity("PandoraMVC.Entities.Epic", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -167,16 +169,14 @@ namespace PandoraMVC.Data.Migrations
                     b.Property<int>("WorkspaceId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("WorkspaceId");
+                    b.HasKey("ID");
 
                     b.ToTable("Epics");
                 });
 
             modelBuilder.Entity("PandoraMVC.Entities.Task", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -202,14 +202,7 @@ namespace PandoraMVC.Data.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("WorkspaceId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EpicId");
-
-                    b.HasIndex("WorkspaceId");
+                    b.HasKey("ID");
 
                     b.ToTable("Tasks");
                 });
@@ -288,14 +281,12 @@ namespace PandoraMVC.Data.Migrations
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("WorkspaceId");
-
                     b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("PandoraMVC.Entities.Workspace", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -303,7 +294,7 @@ namespace PandoraMVC.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ID");
 
                     b.ToTable("Workspaces");
                 });
@@ -355,37 +346,6 @@ namespace PandoraMVC.Data.Migrations
                     b.HasOne("PandoraMVC.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PandoraMVC.Entities.Epic", b =>
-                {
-                    b.HasOne("PandoraMVC.Entities.Workspace", "Workspace")
-                        .WithMany("Epics")
-                        .HasForeignKey("WorkspaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PandoraMVC.Entities.Task", b =>
-                {
-                    b.HasOne("PandoraMVC.Entities.Epic", "Epic")
-                        .WithMany("Tasks")
-                        .HasForeignKey("EpicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PandoraMVC.Entities.User", "Workspace")
-                        .WithMany("Tasks")
-                        .HasForeignKey("WorkspaceId");
-                });
-
-            modelBuilder.Entity("PandoraMVC.Entities.User", b =>
-                {
-                    b.HasOne("PandoraMVC.Entities.Workspace", "Workspace")
-                        .WithMany("Users")
-                        .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
