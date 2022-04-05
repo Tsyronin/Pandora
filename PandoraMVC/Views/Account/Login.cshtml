@@ -1,0 +1,28 @@
+﻿@model PandoraMVC.ViewModel.LoginViewModel
+
+
+<h1 style="text-align: center;">Вхід</h1>
+    <div class="col-md-12">
+        <hr />
+        @{ 
+            if(Model.ExternalLogins.Count == 0)
+            {
+                <div>no externals</div>
+            }
+            else
+            {
+                <form method="post" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
+                    <div class="row justify-content-center">
+                        @foreach(var provider in Model.ExternalLogins)
+                        {
+                            <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Login using your @provider.DisplayName account">
+                                @provider.DisplayName
+                            </button>
+
+                        }
+                    </div>
+                </form>
+            }
+        }
+</div>
+    </div>
