@@ -86,6 +86,7 @@ namespace PandoraMVC.Controllers
                             // при логіні який присвоювати WorkspaceId?
                         };
                         await _userManager.CreateAsync(user);
+                        await _userManager.AddToRoleAsync(user, "user");
                     }
 
                     await _userManager.AddLoginAsync(user, info);
