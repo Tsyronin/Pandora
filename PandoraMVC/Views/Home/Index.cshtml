@@ -1,8 +1,133 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using PandoraMVC.Entities
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@using Syncfusion.EJ2.Gantt;
+
+@{   List<object> contextItems = new List<object> { "AutoFitAll", "AutoFit", "TaskInformation", "DeleteTask", "Save", "Cancel",
+    "SortAscending", "SortDescending", "Add", "DeleteDependency", "Convert", "Indent", "Outdent"};
+
+    contextItems.Add(new { text = "Collapse the Row", target = ".e-content", id = "collapserow" });
+    contextItems.Add(new { text = "Expand the Row", target = ".e-content", id = "expandrow" });
+
+}
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="control-section" id="container">
+        <div class="row">
+            <div class="col-12">
+                <ejs-gantt id='ContextMenu' dataSource="ViewBag.dataSource" gridLines="Both" allowResizing="true" allowSorting="true" enableContextMenu="true" contextMenuItems="contextItems"
+                treeColumnIndex="1"  allowSelection="true" highlightWeekends="true" contextMenuOpen="contextMenuOpen" contextMenuClick="contextMenuClick"
+                resources="ViewBag.projectResources"
+                projectStartDate="01/01/2022" projectEndDate="01/01/2023"
+                toolbar="@(new List<string>() { "Add", "Edit", "Update", "Delete", "Cancel", "ExpandAll", "CollapseAll" })"
+                width="100%" height="100%">
+                    <e-gantt-taskfields id="TaskId" name="TaskName" startDate="StartDate"
+                            endDate="EndDate" duration="Duration" progress="Progress" dependency="Predecessor"
+                            child="SubTasks" notes="Notes" resourceInfo="ResourceId">
+                    </e-gantt-taskfields>
+                    <e-gantt-resourcefields id="ResourceId" name="ResourceName">
+                    </e-gantt-resourcefields>
+                    <e-gantt-columns>
+                        <e-gantt-column field="TaskId" width="80"></e-gantt-column>
+                        <e-gantt-column field="TaskName" headerText="Job Name" width="250" clipMode="EllipsisWithTooltip"></e-gantt-column>
+                        <e-gantt-column field="StartDate"></e-gantt-column>
+                        <e-gantt-column field="Duration"></e-gantt-column>
+                        <e-gantt-column field="Progress"></e-gantt-column>
+                        <e-gantt-column field="Predecessor"></e-gantt-column>
+                    </e-gantt-columns>
+                    <e-gantt-editsettings allowAdding="true" allowEditing="true" allowDeleting="true"
+                                allowTaskbarEditing="true" showDeleteConfirmDialog="true"></e-gantt-editsettings>
+                    <e-gantt-timelinesettings>
+                        <e-timelinesettings-toptier unit="Week" format="MMM dd, y"></e-timelinesettings-toptier>
+                        <e-timelinesettings-bottomtier unit="Day"></e-timelinesettings-bottomtier>
+                    </e-gantt-timelinesettings>
+                    <e-gantt-labelSettings leftLabel="TaskName" rightLabel="${if(taskData.SubTasks)}${taskData.Duration} ${else if(ResourceId)}${ResourceId}${/if}"></e-gantt-labelSettings>
+                    <e-gantt-editdialogfields>
+                        <e-gantt-editdialogfield type="General"></e-gantt-editdialogfield>
+                        <e-gantt-editdialogfield type="Dependency"></e-gantt-editdialogfield>
+                        <e-gantt-editdialogfield type="Resources"></e-gantt-editdialogfield>
+                        <e-gantt-editdialogfield type="Notes"></e-gantt-editdialogfield>
+                    </e-gantt-editdialogfields>
+                </ejs-gantt>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="control-section" id="container">
+         <div class="row">
+            <div class="jumbotron jumbotron-fluid">
+              <div class="container">
+                <h1 class="display-4">Please log in...</h1>
+              </div>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    function contextMenuOpen(args) {
+        var record = args.rowData;
+        if (args.type !== 'Header') {
+            if (!record.hasChildRecords) {
+                args.hideItems.push('Collapse the Row');
+                args.hideItems.push('Expand the Row');
+            } else {
+                if (record.expanded) {
+                    args.hideItems.push('Expand the Row');
+                } else {
+                    args.hideItems.push('Collapse the Row');
+                }
+            }
+        }
+    }
+        function contextMenuClick(args) {
+            var ganttObj = document.getElementById("ContextMenu").ej2_instances[0];
+            var record = args.rowData;
+            if (args.item.id === 'collapserow') {
+                ganttObj.collapseByID(record.ganttProperties.taskId);
+            }
+            if (args.item.id === 'expandrow') {
+                ganttObj.expandByID(record.ganttProperties.taskId);
+            }
+    }
+</script>
+
+<style>
+    #container {
+        display: block;
+        margin: 0 30px;
+        height: 100%;
+    }
+    .col-12{
+        height: 100%;
+        padding: 0;
+    }
+    .row{
+        margin: 20px 0 0 0;
+        border: 5px #d9e3f1 solid;
+        box-shadow: 5px 5px 10px rgb(55 94 148 / 20%), -5px -5px 10px rgb(255 255 255 / 40%);
+        border-radius: 5px;
+        height: 100%;
+
+    }
+    #ContextMenu{
+        height: 100%;
+    }
+    .jumbotron{
+        text-align: center;
+        height: 100%;       
+
+    }
+    .display-4{
+        margin: 30% 0;
+        color: white;
+    }
+
+
+</style>
