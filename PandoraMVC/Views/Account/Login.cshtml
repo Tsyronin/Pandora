@@ -1,28 +1,45 @@
 ﻿@model PandoraMVC.ViewModel.LoginViewModel
 
 
-<h1 style="text-align: center;">Вхід</h1>
-    <div class="col-md-12">
-        <hr />
-        @{ 
-            if(Model.ExternalLogins.Count == 0)
-            {
-                <div>no externals</div>
-            }
-            else
-            {
-                <form method="post" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
-                    <div class="row justify-content-center">
-                        @foreach(var provider in Model.ExternalLogins)
-                        {
-                            <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Login using your @provider.DisplayName account">
-                                @provider.DisplayName
-                            </button>
-
-                        }
-                    </div>
-                </form>
-            }
+<h1 style="text-align: center; margin-top: 30px;">Log in with...</h1>
+<div class="col-md-12">
+    <hr />
+    @{ 
+        if(Model.ExternalLogins.Count == 0)
+        {
+            <div>no externals</div>
         }
+        else
+        {
+            <form method="post" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
+                <div class="row justify-content-center">
+                    @foreach(var provider in Model.ExternalLogins)
+                    {
+                        <button type="submit" class="btn btn-light" name="provider" value="@provider.Name" title="Login using your @provider.DisplayName account">
+                            @provider.DisplayName
+                        </button>
+
+                    }
+                </div>
+            </form>
+        }
+    }
 </div>
-    </div>
+<style>
+    .btn-light{
+        width: 10%;
+        background-color: #fff;   
+    }
+    .btn:hover{
+        color: #fff;
+        background-color: #378dfc;
+        border-color: #378dfc;
+        box-shadow: 5px 5px 10px rgba(55, 94, 148, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.4);
+    }
+    .btn:focus{
+        border-color: transparent !important; 
+        background-color: #378dfc !important;
+        box-shadow: inset 2px 3px 6px rgba(0, 0, 0, 0.2), inset -3px -2px 6px rgba(255, 255, 255, 0.2) !important;
+    }
+
+</style>

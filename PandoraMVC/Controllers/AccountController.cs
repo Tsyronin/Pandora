@@ -7,6 +7,9 @@ using PandoraMVC.Entities;
 using PandoraMVC.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using PandoraMVC.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace PandoraMVC.Controllers
 {
@@ -14,11 +17,14 @@ namespace PandoraMVC.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-
+        private readonly ApplicationDbContext _context;
         public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            optionsBuilder.UseSqlServer("DefaultConnection");
+            _context = new ApplicationDbContext(optionsBuilder.Options);
         }
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl = null)
@@ -39,7 +45,7 @@ namespace PandoraMVC.Controllers
             return new ChallengeResult(provider, properties);
         }
 
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl=null, string remoteError = null)
+        public async Task<IActionResult> ExternalLoginCallback (string returnUrl=null, string remoteError = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
 
@@ -77,14 +83,16 @@ namespace PandoraMVC.Controllers
 
                     if(user == null)
                     {
+                        //var workspace = _context.Workspaces.First(w => true).Id;
                         user = new User
                         {
                             UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
                             Email = info.Principal.FindFirstValue(ClaimTypes.Email),
                             Name = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-                            Surname = info.Principal.FindFirstValue(ClaimTypes.Surname)
-                            // при логіні який присвоювати WorkspaceId?
-                        };
+                            Surname = info.Principal.FindFirstValue(ClaimTypes.Surname),
+                            WorkspaceId = 2
+                        // при логіні який присвоювати WorkspaceId?
+                    };
                         await _userManager.CreateAsync(user);
                         await _userManager.AddToRoleAsync(user, "user");
                     }
