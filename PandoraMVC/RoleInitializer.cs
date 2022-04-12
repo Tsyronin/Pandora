@@ -11,7 +11,7 @@ namespace PandoraMVC
     {
         public static async System.Threading.Tasks.Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
-            string adminEmail = "khrushchev@knu.ua"; //змінити пошту на яку треба + засунути в users sectets
+            string adminEmail = "dprohorchuk2002@gmail.com"; //змінити пошту на яку треба + засунути в users sectets
             if (await roleManager.FindByNameAsync("admin") == null)
             {
                 await roleManager.CreateAsync(new IdentityRole("admin"));

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 
 public class GanttDataSource
 {
-    public int TaskId { get; set; }
-    public string TaskName { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-    public int? Duration { get; set; }
-    public int Progress { get; set; }
-    public List<GanttDataSource> SubTasks { get; set; }
+    public int taskId { get; set; } 
+    public string taskName { get; set; }
+    public DateTime startDate { get; set; }
+    public DateTime endDate { get; set; }
+    public int? duration { get; set; }
+    public int progress { get; set; }
+    public List<GanttDataSource> subTasks { get; set; }
+    public bool isEpic { get; set; }
+    public string notes { get; set; }
 }

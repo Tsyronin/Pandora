@@ -21,25 +21,30 @@
     <div class="control-section" id="container">
         <div class="row">
             <div class="col-12">
-                <ejs-gantt id='ContextMenu' dataSource="ViewBag.dataSource" gridLines="Both" allowResizing="true" allowSorting="true" enableContextMenu="true" contextMenuItems="contextItems"
+                @*if (User.IsInRole("admin"))
+                {*@
+                    <ejs-gantt id='ContextMenu' gridLines="Both" allowResizing="true" allowSorting="true" enableContextMenu="true" contextMenuItems="contextItems"
                 treeColumnIndex="1"  allowSelection="true" highlightWeekends="true" contextMenuOpen="contextMenuOpen" contextMenuClick="contextMenuClick"
-                resources="ViewBag.projectResources"
+                resources="ViewBag.projectResources" 
                 projectStartDate="01/01/2022" projectEndDate="01/01/2023"
-                toolbar="@(new List<string>() { "Add", "Edit", "Update", "Delete", "Cancel", "ExpandAll", "CollapseAll" })"
+                toolbar="@(new List<string>() { "Add", "Edit", "Update", "Delete", "Cancel", "ExpandAll", "CollapseAll", "Search" })"
                 width="100%" height="100%">
-                    <e-gantt-taskfields id="TaskId" name="TaskName" startDate="StartDate"
-                            endDate="EndDate" duration="Duration" progress="Progress" dependency="Predecessor"
-                            child="SubTasks" notes="Notes" resourceInfo="ResourceId">
+                    <e-gantt-taskfields id="taskId" name="taskName" startDate="startDate"
+                            endDate="endDate" duration="duration" progress="progress" 
+                            child="subTasks" notes="notes">
                     </e-gantt-taskfields>
                     <e-gantt-resourcefields id="ResourceId" name="ResourceName">
                     </e-gantt-resourcefields>
+
+                    <e-data-manager url="/Home/UrlDatasource" adaptor="UrlAdaptor" batchUrl="Home/BatchSave"></e-data-manager>
+
                     <e-gantt-columns>
-                        <e-gantt-column field="TaskId" width="80"></e-gantt-column>
-                        <e-gantt-column field="TaskName" headerText="Job Name" width="250" clipMode="EllipsisWithTooltip"></e-gantt-column>
-                        <e-gantt-column field="StartDate"></e-gantt-column>
-                        <e-gantt-column field="Duration"></e-gantt-column>
-                        <e-gantt-column field="Progress"></e-gantt-column>
-                        <e-gantt-column field="Predecessor"></e-gantt-column>
+                        <e-gantt-column field="taskId" width="80"></e-gantt-column>
+                        <e-gantt-column field="taskName" headerText="Job Name" width="250" clipMode="EllipsisWithTooltip"></e-gantt-column>
+                        <e-gantt-column field="startDate"></e-gantt-column>
+                        <e-gantt-column field="duration"></e-gantt-column>
+                        <e-gantt-column field="progress"></e-gantt-column>
+                        <e-gantt-column field="predecessor"></e-gantt-column>
                     </e-gantt-columns>
                     <e-gantt-editsettings allowAdding="true" allowEditing="true" allowDeleting="true"
                                 allowTaskbarEditing="true" showDeleteConfirmDialog="true"></e-gantt-editsettings>
@@ -48,13 +53,45 @@
                         <e-timelinesettings-bottomtier unit="Day"></e-timelinesettings-bottomtier>
                     </e-gantt-timelinesettings>
                     <e-gantt-labelSettings leftLabel="TaskName" rightLabel="${if(taskData.SubTasks)}${taskData.Duration} ${else if(ResourceId)}${ResourceId}${/if}"></e-gantt-labelSettings>
+                    <e-gantt-adddialogfields>
+                        <e-gantt-adddialogfield type="General" fields="@(new string[]{ "taskId", "taskName", "startDate", "endDate"})"></e-gantt-adddialogfield>
+                        <e-gantt-adddialogfield type="Resources"></e-gantt-adddialogfield>
+                        <e-gantt-adddialogfield type="Notes"></e-gantt-adddialogfield>
+                    </e-gantt-adddialogfields>
                     <e-gantt-editdialogfields>
-                        <e-gantt-editdialogfield type="General"></e-gantt-editdialogfield>
+                        <e-gantt-editdialogfield type="General" fields="@(new string[]{ "taskId", "taskName", "startDate", "endDate"})"></e-gantt-editdialogfield>
                         <e-gantt-editdialogfield type="Dependency"></e-gantt-editdialogfield>
                         <e-gantt-editdialogfield type="Resources"></e-gantt-editdialogfield>
                         <e-gantt-editdialogfield type="Notes"></e-gantt-editdialogfield>
                     </e-gantt-editdialogfields>
                 </ejs-gantt>
+                @*} 
+                else
+                {
+
+                    <ejs-gantt id='Gantt' height="450px" toolbar="@(new List<string>() { 
+                        "Add", "Cancel", "CollapseAll", "Delete", "Edit", "ExpandAll", "NextTimeSpan", "PrevTimeSpan", "Search", "Update" })"
+                         enableContextMenu="true" allowSorting="true" allowResizing="true" readOnly="true">
+                        <e-gantt-taskfields id="TaskId" name="TaskName" startDate="StartDate"
+                                endDate="EndDate" duration="Duration" progress="Progress" child="SubTasks">
+                        </e-gantt-taskfields>
+                        <e-gantt-taskfields id="taskId" name="taskName" startDate="startDate"
+                            endDate="endDate" duration="duration" progress="progress" 
+                            child="subTasks">
+                        </e-gantt-taskfields>
+                        <e-data-manager url="/Home/UrlDatasource" adaptor="UrlAdaptor" batchUrl="Home/BatchSave"></e-data-manager>
+                        <e-gantt-columns>
+                        <e-gantt-column field="taskId" width="80"></e-gantt-column>
+                        <e-gantt-column field="taskName" headerText="Job Name" width="250" clipMode="EllipsisWithTooltip"></e-gantt-column>
+                        <e-gantt-column field="startDate"></e-gantt-column>
+                        <e-gantt-column field="euration"></e-gantt-column>
+                        <e-gantt-column field="progress"></e-gantt-column>
+                        <e-gantt-column field="predecessor"></e-gantt-column>
+                    </e-gantt-columns>
+                        <e-gantt-editsettings readOnly="true" allowAdding="true" allowEditing="true" allowTaskbarEditing="true" allowDeleting="true"></e-gantt-editsettings>
+                    </ejs-gantt>
+                }*@
+                
             </div>
         </div>
     </div>
@@ -97,6 +134,7 @@ else
                 ganttObj.expandByID(record.ganttProperties.taskId);
             }
     }
+
 </script>
 
 <style>

@@ -63,6 +63,8 @@ namespace PandoraMVC
 
             app.UseRouting();
 
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Mgo+DSMBMAY9C3t2VVhhQlFaclhJWHxIfEx0RWFbb1x6dl1MZVpBJAtUQF1hS35Xd0diXXxccnFdQWVe");
+
             app.UseAuthentication();
             app.UseAuthorization();
 
