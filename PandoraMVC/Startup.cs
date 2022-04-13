@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PandoraMVC.Data;
 using PandoraMVC.Entities;
+using PandoraMVC.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,8 @@ namespace PandoraMVC
                 .AddEntityFrameworkStores<ApplicationDbContext>();*/
             services.AddIdentity<User, IdentityRole>(opts => opts.SignIn.RequireConfirmedAccount=true).AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddScoped<EpicService>();
+            
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
                 googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];

@@ -18,13 +18,11 @@ namespace PandoraMVC.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ApplicationDbContext _context;
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer("DefaultConnection");
-            _context = new ApplicationDbContext(optionsBuilder.Options);
+            _context = applicationDbContext;
         }
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl = null)
