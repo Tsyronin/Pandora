@@ -2,9 +2,9 @@
 using PandoraMVC.Entities;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace PandoraMVC.Services
 {
@@ -37,22 +37,52 @@ namespace PandoraMVC.Services
 
             var epicSource = new GanttDataSource()
             {
-                TaskId = epic.Id,
-                TaskName = epic.Name
+                taskId = epic.Id,
+                taskName = epic.Name,
+                isEpic = true
             };
 
             var convertedTasks = tasks.Select(t => new GanttDataSource() 
             {
-                TaskId = t.Id,
-                TaskName = t.Description,
-                StartDate = t.StartDate,
-                EndDate = t.EndDate,
-                Progress = t.Status == true? 100 : 0
+                taskId = t.Id,
+                taskName = t.Title,
+                startDate = t.StartDate,
+                endDate = t.EndDate,
+                notes = t.Description,
+                progress = t.Status == true? 100 : 0,
+                isEpic = false
             });
 
-            epicSource.SubTasks = convertedTasks.ToList();
+            epicSource.subTasks = convertedTasks.ToList();
 
             return epicSource;
+        }
+    
+        public Epic AddEpic(Epic epic)
+        {
+            epic.Id = 0;
+            _context.Epics.Add(epic);
+            _context.SaveChanges();
+            return epic;
+        }
+
+        public Epic GetEpicById(int epicId)
+        {
+            var epic = _context.Epics.FirstOrDefault(e => e.Id == epicId);
+            return epic;
+        }
+
+        public void EditEpic(Epic epic)
+        {
+            _context.Entry(epic).State = EntityState.Modified;
+            _context.SaveChanges();
+        }
+
+        public void DeleteEpicById(int epicId)
+        {
+            var epic = _context.Epics.FirstOrDefault(e => e.Id == epicId);
+            _context.Epics.Remove(epic);
+            _context.SaveChanges();
         }
     }
 }

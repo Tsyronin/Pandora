@@ -37,7 +37,8 @@ namespace PandoraMVC
             services.AddIdentity<User, IdentityRole>(opts => opts.SignIn.RequireConfirmedAccount=true).AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped<EpicService>();
-            
+            services.AddScoped<TaskService>();
+
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
                 googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
