@@ -7,7 +7,7 @@ public class GanttDataSource
     public string taskName { get; set; }
     public DateTime startDate { get; set; }
     public DateTime endDate { get; set; }
-    public int? duration { get; set; }
+    public double? duration { get; set; }
     public int progress { get; set; }
     public List<GanttDataSource> subTasks { get; set; }
     public bool isEpic { get; set; }

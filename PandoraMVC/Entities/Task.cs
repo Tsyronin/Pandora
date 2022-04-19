@@ -28,6 +28,6 @@ namespace PandoraMVC.Entities
 
         public virtual Epic Epic { get; set; }
 
-        public virtual User Workspace { get; set; }
+        public virtual User User { get; set; }
     }
 }
