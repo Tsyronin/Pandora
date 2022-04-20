@@ -19,12 +19,14 @@ namespace PandoraMVC.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly EpicService _epicService;
         private readonly TaskService _taskService;
+        private readonly ActionRecognizer _actionRecognizer;
 
-        public HomeController(ILogger<HomeController> logger, EpicService epicService, TaskService taskService)
+        public HomeController(ILogger<HomeController> logger, EpicService epicService, TaskService taskService, ActionRecognizer actionRecognizer)
         {
             _logger = logger;
             _epicService = epicService;
             _taskService = taskService;
+            _actionRecognizer = actionRecognizer;
         }
 
         public IActionResult Index()
@@ -32,106 +34,56 @@ namespace PandoraMVC.Controllers
             return View();
         }
 
-        public List<GanttDataSource> GetData()
+        public ActionResult UrlDatasource(DataManagerRequest dm)
+        {
+            var data = GetData();
+
+            return Json(new { result = data, count = data.Count() });
+        }
+
+        private List<GanttDataSource> GetData()
         {
             var ganttDataSources = _epicService.GetGanttDataSources();
 
             return ganttDataSources.ToList();
         }
 
-        public ActionResult UrlDatasource(DataManagerRequest dm)
-        {
-            var data = GetData();
-            return Json(new { result = data, count = data.Count() });
-        }
-
-        public class ICRUDModel<T> where T : class
-        {
-
-            public object key { get; set; }
-
-            public T value { get; set; }
-
-            public List<T> added { get; set; }
-
-            public List<T> changed { get; set; }
-
-            public List<T> deleted { get; set; }
-
-        }
         public ActionResult BatchSave([FromBody] ICRUDModel<GanttDataSource> data)
         {
             List<GanttDataSource> uAdded = new List<GanttDataSource>();
             List<GanttDataSource> uChanged = new List<GanttDataSource>();
             List<GanttDataSource> uDeleted = new List<GanttDataSource>();
 
-            if (ActionIsAddEpic(data)) {
-                AddEpic(data.added.First(), uAdded);
-            }
-            else if (ActionIsAddTask(data)) {
-                AddTask(data.added.First(), data.changed.First(), uAdded);
-            }
-            else if (ActionIsEditTask(data)){
-                EditTask(data.changed.First(), uChanged);
-            }
-            else if (ActionIsEditEpic(data))
-            {
-                EditEpic(data.changed.First(), uChanged);
-            }
-            else if (ActionIsDeleteTask(data))
-            {
-                DeleteTask(data.deleted.First(), uDeleted);
-            }
-            else if (ActionIsDeleteEpic(data))
-            {
-                DeleteEpic(data.deleted.First(), uDeleted);
-            }
-            else
-            {
-                //Unsupported Operation
-            }
+            ProcessAction(data, uAdded, uChanged, uDeleted);
 
             return Json(new { addedRecords = uAdded, changedRecords = uChanged, deletedRecords = uDeleted });
         }
 
-        private bool ActionIsAddEpic(ICRUDModel<GanttDataSource> data)
+        private void ProcessAction(ICRUDModel<GanttDataSource> data, List<GanttDataSource> uAdded, List<GanttDataSource> uChanged, List<GanttDataSource> uDeleted)
         {
-            return (data.added != null && data.added.Count() > 0)
-                && (data.deleted == null || data.deleted.Count() == 0)
-                && (data.changed == null || data.changed.Count() == 0);
-        }
-
-        private bool ActionIsAddTask(ICRUDModel<GanttDataSource> data)
-        {
-            return (data.added != null && data.added.Count() > 0)
-                && (data.deleted == null || data.deleted.Count() == 0)
-                && (data.changed != null && data.changed.Count() > 0);
-        }
-
-        private bool ActionIsEditTask(ICRUDModel<GanttDataSource> data)
-        {
-            return (data.added == null || data.added.Count() == 0)
-                && (data.changed != null && data.changed.Count() == 2);
-        }
-
-        private bool ActionIsEditEpic(ICRUDModel<GanttDataSource> data)
-        {
-            return (data.added == null || data.added.Count() == 0)
-                && (data.changed != null && data.changed.Count() == 1)
-                && (data.deleted == null || data.deleted.Count() == 0)
-                && data.changed.First().isEpic == true;
-        }
-
-        private bool ActionIsDeleteTask(ICRUDModel<GanttDataSource> data)
-        {
-            return (data.deleted != null && data.deleted.Count() > 0)
-                && data.deleted.First().isEpic == false;
-        }
-
-        private bool ActionIsDeleteEpic(ICRUDModel<GanttDataSource> data)
-        {
-            return (data.deleted != null && data.deleted.Count() > 0)
-                && data.deleted.First().isEpic == true;
+            switch (_actionRecognizer.RecognizeAction(data))
+            {
+                case Helpers.UiAction.AddEpic:
+                    AddEpic(data.added.First(), uAdded);
+                    break;
+                case Helpers.UiAction.AddTask:
+                    AddTask(data.added.First(), data.changed.First(), uAdded);
+                    break;
+                case Helpers.UiAction.EditTask:
+                    EditTask(data.changed.First(), uChanged);
+                    break;
+                case Helpers.UiAction.EditEpic:
+                    EditEpic(data.changed.First(), uChanged);
+                    break;
+                case Helpers.UiAction.DeleteTask:
+                    DeleteTask(data.deleted.First(), uDeleted);
+                    break;
+                case Helpers.UiAction.DeleteEpic:
+                    DeleteEpic(data.deleted.First(), uDeleted);
+                    break;
+                case Helpers.UiAction.Unknown:
+                    break;
+            }
         }
 
         private void AddEpic(GanttDataSource epicGDS, List<GanttDataSource> uAdded)
@@ -212,21 +164,6 @@ namespace PandoraMVC.Controllers
         {
             _epicService.DeleteEpicById(epicGDS.taskId);
             uDeleted.Add(epicGDS);
-        }
-
-
-
-
-
-
-        public void RemoveChildRecords(string key)
-        {
-            //var childList = db.GanttDatas.Where(x => x.ParentId == key).ToList();
-            //foreach (var item in childList)
-            //{
-            //    db.GanttDatas.Remove(item);
-            //    RemoveChildRecords(item.TaskId);
-            //}
         }
 
         public IActionResult Privacy()
