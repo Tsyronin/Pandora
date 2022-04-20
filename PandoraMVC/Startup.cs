@@ -38,6 +38,7 @@ namespace PandoraMVC
 
             services.AddScoped<EpicService>();
             services.AddScoped<TaskService>();
+            services.AddScoped<ActionRecognizer>();
 
             services.AddAuthentication().AddGoogle(googleOptions =>
             {
